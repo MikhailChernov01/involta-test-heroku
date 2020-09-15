@@ -1,0 +1,58 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;  
+  height: 100%;
+  background-color: #ececec;
+}
+
+
+h1 {
+  margin: 0;
+  text-align: left;
+  font-size: 1.4em;
+  color: #FFF;
+  font-weight: 200;
+  width: auto;
+  margin: auto;
+}
+
+.header {
+  max-width: 100%;
+  background-color: #3399ff;
+  padding: 20px;
+}
+
+.table {
+  padding: 10px 20px; 
+  margin: auto; 
+}
+
+.tableHead {
+  text-align: left;
+  font-size: 0.8em;
+  font-weight: 100;
+  color: #8a8a8a;
+  padding: 1em 5px;
+}
+
+input, select, option {
+  margin: 0;
+  padding: 2px 5px;
+  border: none;
+  border-radius: 2px;
+  background-color: #FFF;
+  height: 2em;
+  width: 12em;
+  text-align: left;
+}
+
+select {
+  height: 2.3em;
+}
+
+.dateInput {
+  text-align: left;
+}
+
