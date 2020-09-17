@@ -8,8 +8,19 @@ import "./App.css";
 const HOST = location.origin.replace(/^http/, 'ws')
 const socket = new W3CWebSocket(HOST);
 
-//const socket = new W3CWebSocket("ws://");
+setTimeout(() => {
+  if (socket.readyState !== 1){
+    alert('WebSocket connection problem')
+  }
+}, 3000)
 
+socket.onopen = function(event) {
+  console.log('WebSocket Connected');
+}
+
+socket.onerror = function(error) {
+  console.log('WebSocket Error: ' + error);
+};
 
 const titles = [{ fullName: "ФИО" }, { jobTitle: "Должность" }, { salary: "Оклад" }, { currentStatus: "Статус" }, { startDate: "Дата приема на работу" }];
 
@@ -21,12 +32,45 @@ function App() {
   const names = useSelector((state) => state.names);
 
   //socket recieve data and assign to cells
-  socket.onmessage = (event) => {
+  socket.onmessage = (event) => {    
     const change = JSON.parse(event.data);
     saveLocalFromServer(event.data)
     const targetCell = document.getElementById(change.cell);
-    targetCell.value = change.value;
+    
+    if (change.type === "focus"){      
+
+    // block input function if a cell is on focus
+    blockInput(targetCell)
+    } else if (change.type === "blur"){
+
+      //allow input function if a cell is not on focus
+      allowInput(targetCell)
+    } else {
+      targetCell.value = change.value;
+    } 
+       
   };
+
+  //block input if data comes from server and cell is on focus
+  const blockInput = (targetCell) => {    
+    targetCell.style.backgroundColor = '#F8F8F8';    
+    targetCell.style.border = '#DD1717 1px solid';
+    targetCell.disabled = 'disabled';    
+  }
+
+  //allow input if a cell yet is not on focus
+  const allowInput = (targetCell) => {
+  targetCell.removeAttribute('disabled');
+  targetCell.style.backgroundColor = '#F0FFF0';
+  targetCell.style.border = '#96E494 1px solid';
+    setTimeout(
+      () => {   
+    targetCell.style.backgroundColor = 'white'; 
+    targetCell.style.border = 'none';        
+      }, 1000
+    )    
+  }
+
 
   //save data coming from server to local storage
   const saveLocalFromServer = (commingData) => {
@@ -46,7 +90,9 @@ function App() {
     let message = JSON.stringify({
       cell: event.target.id,
       value: event.target.value,
+      type: event.type
     })
+
     setName(message)
     dispatch(addName(message))
     saveToLocalStorage(message)
@@ -91,6 +137,8 @@ function App() {
               }
               type="text"
               onChange={(e) => { sendToServer(e) }}
+              onFocus={(e) => sendToServer(e)}
+              onBlur={(e) => sendToServer(e)}
               value={insertDataFromStorage(Object.keys(titles[0]) + i)}
             ></input>
           </td>
@@ -99,6 +147,8 @@ function App() {
               id={Object.keys(titles[1]) + i}
               type="text"
               onChange={(e) => sendToServer(e)}
+              onFocus={(e) => sendToServer(e)}
+              onBlur={(e) => sendToServer(e)}
               value={insertDataFromStorage(Object.keys(titles[1]) + i)}
             ></input>
           </td>
@@ -108,11 +158,16 @@ function App() {
               type="number"
               value={insertDataFromStorage(Object.keys(titles[2]) + i)}
               onChange={(e) => sendToServer(e)}
+              onFocus={(e) => sendToServer(e)}
+              onBlur={(e) => sendToServer(e)}
             ></input>
           </td>
           <td>
             <select
-              id={Object.keys(titles[3]) + i} size="1" onChange={(e) => sendToServer(e)}
+              id={Object.keys(titles[3]) + i} size="1" 
+              onChange={(e) => sendToServer(e)}
+              onFocus={(e) => sendToServer(e)}
+              onBlur={(e) => sendToServer(e)}
               value={insertDataFromStorage(Object.keys(titles[3]) + i)}
             >
               <option></option>
@@ -127,6 +182,8 @@ function App() {
               type="date"
               value={insertDataFromStorage(Object.keys(titles[4]) + i)}
               onChange={(e) => sendToServer(e)}
+              onFocus={(e) => sendToServer(e)}
+              onBlur={(e) => sendToServer(e)}
             ></input>
           </td>
         </tr>
